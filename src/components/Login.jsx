@@ -16,9 +16,10 @@ import sideImage from "../image/human.jpeg";
 import logo from "../image/sai.png";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Login(props) {
-    const navigate = useNavigate()
+  const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -26,54 +27,56 @@ function Login(props) {
 
   const handleEye = () => setShow(!show);
 
-  const handleLogin = async () => {
-  try {
-    const payloadData = {
-      uid: username,
-      password: password,
-      blocked: 0,
-    };
+  const handleLogin = async (e) => {
+    e.preventDefault()
+    try {
+      const payloadData = {
+        uid: username,
+        password: password,
+        blocked: 0,
+      };
 
-    localStorage.setItem("user", JSON.stringify(payloadData));
-    const base64Payload = btoa(JSON.stringify(payloadData));
+      localStorage.setItem("user", JSON.stringify(payloadData));
+      const base64Payload = btoa(JSON.stringify(payloadData));
 
-    console.log(base64Payload)
+      console.log(base64Payload);
 
-    const response = await fetch(
-      "https://myphysio.digitaldarwin.in/api/login_v1",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          payload: base64Payload,
-        }),
+      const response = await axios.post(
+        "https://myphysio.digitaldarwin.in/api/login_v1",
+        { payload: base64Payload },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Vary": "Accept"
+          },
+        }
+      );
+
+      console.log(response);
+
+      if (response.status !== 200) {
+        throw new Error("Login failed");
       }
-    );
 
-    if (!response.ok) {
-      throw new Error("Login failed");
-    }
+      const encryptedResponse = response.data.response;
 
-    const encryptedResponse = await response.json();
+      const decryptedResponse = atob(encryptedResponse);
 
+      const responseObj = JSON.parse(decryptedResponse);
 
-    const decryptedResponse = atob(encryptedResponse.response);
-
-    const responseObj = JSON.parse(decryptedResponse);
-
-    localStorage.setItem("jwt", JSON.stringify(responseObj.jwt));
-    if (responseObj.message === "login successfully") {
-     navigate('/dashboard')
-    } else {
+      localStorage.setItem("jwt", JSON.stringify(responseObj.jwt));
+      if (responseObj.message === "login successfully") {
+        navigate("/dashboard");
+      } else {
+        setLoginError("Login faileddddd");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
       setLoginError("Login failed");
+
     }
-  } catch (error) {
-    console.error("Login error:", error);
-    setLoginError("Login failed");
-  }
-};
+  };
 
   return (
     <Box
@@ -91,11 +94,7 @@ function Login(props) {
         borderRadius="10px"
       >
         <Box w="60%" h="100%">
-          <Image
-            w="800px"
-            h="400px"
-            src={sideImage}
-          />
+          <Image w="800px" h="400px" src={sideImage} />
         </Box>
         <Box
           display="flex"
