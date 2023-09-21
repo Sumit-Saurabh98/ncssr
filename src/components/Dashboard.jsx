@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Header from './Header';
-import { Box, Button, Spinner } from '@chakra-ui/react';
-import {FaFileDownload} from "react-icons/fa"
+import { Box, Spinner } from '@chakra-ui/react';
+
 import axios from 'axios';
 import {
   LineChart,
@@ -69,10 +69,9 @@ function Dashboard(props) {
 
   return (
     <div>
-      <Header />
+      <Header handleDownloadPDF={handleDownloadPDF} />
 
       <Box>
-        <Button _hover={{cursor:"pointer"}} onClick={handleDownloadPDF}>{<FaFileDownload/>}</Button>
         {isLoading ? (
           <Spinner
             size="xl"
@@ -83,7 +82,7 @@ function Dashboard(props) {
           />
         ) : (
           <div>
-            <div ref={chartContainerRef}>
+            <div style={{width:"80%", margin:" 50px auto"}} ref={chartContainerRef}>
               <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={data} ref={chartRef}>
                   <CartesianGrid strokeDasharray="3 3" />

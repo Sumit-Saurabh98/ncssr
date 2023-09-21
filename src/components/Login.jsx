@@ -11,14 +11,16 @@ import {
   InputRightElement,
   Text,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import sideImage from "../image/human.jpeg";
 import logo from "../image/sai.png";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { AuthContext } from "../context/AuthProvider";
 
 function Login(props) {
+  const {trueAuth, falseAuth}  = useContext(AuthContext)
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const [username, setUsername] = useState("");
@@ -31,17 +33,15 @@ function Login(props) {
     e.preventDefault()
     try {
       const payloadData = {
-        uid: username,
-        password: password,
-        blocked: 0,
+        username,
+        password,
       };
 
-      localStorage.setItem("user", JSON.stringify(payloadData));
-      const base64Payload = btoa(JSON.stringify(payloadData));
+      localStorage.setItem('userData', JSON.stringify(payloadData));
 
       const response = await axios.post(
         process.env.REACT_APP_LOGIN_URI,
-        { payload: base64Payload },
+        { username, password },
         {
           headers: {
             "Content-Type": "application/json",
@@ -51,28 +51,19 @@ function Login(props) {
         }
       );
 
-      console.log(response);
-
-      if (response.status !== 200) {
-        throw new Error("Login failed");
-      }
-
-      const encryptedResponse = response.data.response;
-
-      const decryptedResponse = atob(encryptedResponse);
-
-      const responseObj = JSON.parse(decryptedResponse);
-
-      localStorage.setItem("jwt", JSON.stringify(responseObj.jwt));
-      if (responseObj.message === "login successfully") {
-        navigate("/dashboard");
-      } else {
+      if(response.status !== 200){
         setLoginError("Login failed");
+        falseAuth()
+      }else{
+        setLoginError("Login Successful");
+        trueAuth()
+        localStorage.setItem("physioToken", response.data.token)
+        navigate("/dashboard");
       }
     } catch (error) {
       console.error("Login error:", error);
       setLoginError("Login failed");
-
+      falseAuth()
     }
   };
 

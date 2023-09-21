@@ -3,8 +3,9 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { Avatar, Box, Container, IconButton, MenuItem, Tooltip } from '@mui/material';
+import { Avatar, Box, Button, Container, IconButton, MenuItem, Tooltip } from '@mui/material';
 import AdbIcon from '@mui/icons-material/Adb';
+import {BiSolidDownload} from "react-icons/bi"
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
@@ -18,12 +19,12 @@ const theme = createTheme({
   },
 });
 
-function Header() {
+function Header({handleDownloadPDF}) {
     const navigate = useNavigate()
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-  const {toggleAuth} = useContext(AuthContext)
+  const {falseAuth} = useContext(AuthContext)
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -42,7 +43,7 @@ function Header() {
 
   const handleLogout = () => {
     localStorage.clear();
-    toggleAuth()
+    falseAuth()
     navigate('/')
   };
 
@@ -122,8 +123,9 @@ function Header() {
               PHYSIO-AI
             </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-              {/* Additional content */}
             </Box>
+
+            <Button style={{padding:"10px 20px"}} onClick={()=>handleDownloadPDF()} _hover={{cursor:"pointer"}}>Download {<BiSolidDownload/>}</Button>
 
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
