@@ -26,44 +26,61 @@ function Login(props) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const handleEye = () => setShow(!show);
 
   const handleLogin = async (e) => {
-    e.preventDefault()
-    try {
-      const payloadData = {
-        username,
-        password,
-      };
+    e.preventDefault();
 
-      localStorage.setItem('userData', JSON.stringify(payloadData));
+    // Reset validation errors
+    setUsernameError("");
+    setPasswordError("");
 
-      const response = await axios.post(
-        process.env.REACT_APP_LOGIN_URI,
-        { username, password },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-            "Vary": "Accept"
-          },
+    // Check if username and password are entered
+    if (!username) {
+      setUsernameError("Username is required");
+    }
+    if (!password) {
+      setPasswordError("Password is required");
+    }
+
+    if (username && password) {
+      try {
+        const payloadData = {
+          username,
+          password,
+        };
+
+        localStorage.setItem("userData", JSON.stringify(payloadData));
+
+        const response = await axios.post(
+          process.env.REACT_APP_LOGIN_URI,
+          { username, password },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+              Vary: "Accept",
+            },
+          }
+        );
+
+        if (response.status !== 200) {
+          setLoginError("Login failed");
+          falseAuth();
+        } else {
+          setLoginError("Login Successful");
+          trueAuth();
+          localStorage.setItem("physioToken", response.data.token);
+          navigate("/dashboard");
         }
-      );
-
-      if(response.status !== 200){
+      } catch (error) {
+        console.error("Login error:", error);
         setLoginError("Login failed");
-        falseAuth()
-      }else{
-        setLoginError("Login Successful");
-        trueAuth()
-        localStorage.setItem("physioToken", response.data.token)
-        navigate("/dashboard");
+        falseAuth();
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      setLoginError("Login failed");
-      falseAuth()
     }
   };
 
@@ -108,6 +125,7 @@ function Login(props) {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
+            {usernameError && <Text color="red">{usernameError}</Text>}
           </FormControl>
           <FormControl isRequired>
             <FormLabel>Password</FormLabel>
@@ -117,7 +135,8 @@ function Login(props) {
                 onChange={(e) => setPassword(e.target.value)}
                 pr="4.5rem"
                 type={show ? "text" : "password"}
-              />
+              /> 
+                {passwordError && <Text color="red">{passwordError}</Text>}
               <InputRightElement width="4.5rem">
                 <Button h="1.75rem" size="sm" onClick={handleEye}>
                   {show ? (
