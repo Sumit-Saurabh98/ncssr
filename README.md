@@ -10,6 +10,8 @@ Before Processing to the dashboard, first, you have to log in. The dashboard is 
 
 ## Login.jsx
 This component is responsible for showing the login form.
+form validation done
+
 
 ## DashBoard.jsx
 This component is responsible for showing the Line char.
