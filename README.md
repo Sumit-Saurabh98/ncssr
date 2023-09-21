@@ -1,10 +1,49 @@
-# Getting Started with Create React App
+# Physio Assignment.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## **note:-
+I have a backend to handle the API response during lOGIN. The API provided in Assignment was giving the cors error.<br/>
 
-## Available Scripts
 
-In the project directory, you can run:
+## There are three components 1.) Login 2.) Dashboard  2.) Header <br/>
+
+Before Processing to the dashboard, first, you have to log in. The dashboard is a protected route, without login, you can not access that.<br/>
+
+## Login.jsx
+This component is responsible for showing the login form.
+
+## DashBoard.jsx
+This component is responsible for showing the Line char.
+
+For the chart data, I am using a free API.
+
+## Tech Stack Used:-
+
+-> React
+-> React Router
+-> Axios
+-> javascript
+-> tailwind css
+-> Material UI
+-> Chakara UI
+-> React Icon
+-> css
+-> node.js
+-> express.js
+
+Here are some Screenshots
+
+<img width="1440" alt="Screenshot 2023-09-21 at 3 02 46 PM" src="https://github.com/Sumit-Saurabh98/ncssr/assets/105351295/de939ccb-ec88-496a-b2d0-9bb4dfd1ed57">
+
+
+<img width="1440" alt="Screenshot 2023-09-21 at 3 02 58 PM" src="https://github.com/Sumit-Saurabh98/ncssr/assets/105351295/0c5a2e6a-73ad-4230-b355-c51d133c3e3a">
+
+
+
+
+
+
+
+
 
 ### `npm start`
 
