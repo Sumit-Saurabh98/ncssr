@@ -39,10 +39,8 @@ function Login(props) {
       localStorage.setItem("user", JSON.stringify(payloadData));
       const base64Payload = btoa(JSON.stringify(payloadData));
 
-      console.log(base64Payload);
-
       const response = await axios.post(
-        "https://myphysio.digitaldarwin.in/api/login_v1",
+        process.env.REACT_APP_LOGIN_URI,
         { payload: base64Payload },
         {
           headers: {
@@ -69,7 +67,7 @@ function Login(props) {
       if (responseObj.message === "login successfully") {
         navigate("/dashboard");
       } else {
-        setLoginError("Login faileddddd");
+        setLoginError("Login failed");
       }
     } catch (error) {
       console.error("Login error:", error);
