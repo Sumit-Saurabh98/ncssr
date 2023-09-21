@@ -1,7 +1,7 @@
 # Physio Assignment.
 
 ## **note:-
-I have a backend to handle the API response during lOGIN. The API provided in Assignment was giving the cors error.<br/>
+I created a backend to handle the API response during Login. The API provided in Assignment was giving the cors error.<br/>
 
 
 ## There are three components 1.) Login 2.) Dashboard  2.) Header <br/>
