@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from './Header';
-import { Box, Spinner } from '@chakra-ui/react'; 
+import { Box, Button, Spinner } from '@chakra-ui/react';
+import {FaFileDownload} from "react-icons/fa"
 import axios from 'axios';
 import {
   LineChart,
@@ -12,6 +13,8 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 function formatDate(timestamp) {
   const date = new Date(timestamp * 1000);
@@ -23,7 +26,9 @@ function formatDate(timestamp) {
 
 function Dashboard(props) {
   const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); 
+  const [isLoading, setIsLoading] = useState(true);
+  const chartRef = useRef(null);
+  const chartContainerRef = useRef(null);
 
   useEffect(() => {
     axios
@@ -43,20 +48,32 @@ function Dashboard(props) {
         }));
 
         setData(formattedData);
-        setIsLoading(false); 
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
-        setIsLoading(false); 
+        setIsLoading(false);
       });
   }, []);
+
+  const handleDownloadPDF = async () => {
+    if (chartContainerRef.current) {
+      const chartContainer = chartContainerRef.current;
+      const canvas = await html2canvas(chartContainer);
+
+      const pdf = new jsPDF('landscape');
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 10, canvas.width / 10, canvas.height / 10);
+      pdf.save('chart.pdf');
+    }
+  };
 
   return (
     <div>
       <Header />
 
       <Box>
-        {isLoading ? ( 
+        <Button _hover={{cursor:"pointer"}} onClick={handleDownloadPDF}>{<FaFileDownload/>}</Button>
+        {isLoading ? (
           <Spinner
             size="xl"
             thickness="4px"
@@ -65,18 +82,22 @@ function Dashboard(props) {
             color="blue.500"
           />
         ) : (
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="time" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="load" name="Load" stroke="#8884d8" />
-              <Line type="monotone" dataKey="solar" name="Solar" stroke="#82ca9d" />
-              <Line type="monotone" dataKey="grid" name="Grid" stroke="#ffc658" />
-            </LineChart>
-          </ResponsiveContainer>
+          <div>
+            <div ref={chartContainerRef}>
+              <ResponsiveContainer width="100%" height={400}>
+                <LineChart data={data} ref={chartRef}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="time" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="load" name="Load" stroke="#8884d8" />
+                  <Line type="monotone" dataKey="solar" name="Solar" stroke="#82ca9d" />
+                  <Line type="monotone" dataKey="grid" name="Grid" stroke="#ffc658" />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         )}
       </Box>
     </div>
