@@ -34,11 +34,10 @@ function Login(props) {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Reset validation errors
+
     setUsernameError("");
     setPasswordError("");
 
-    // Check if username and password are entered
     if (!username) {
       setUsernameError("Username is required");
     }
